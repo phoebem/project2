@@ -76,9 +76,9 @@ function scrollToTimestamp(timestamp) {
 function nearestStamp(fractionScrubbed) {
 	// Figure out what the closest timestamp we have is to the current amount of scrubbing
 	var timestampEquivalent = fractionScrubbed * SOTUvideo.duration + videoOffset; // IF we had a timestamp, what would it be?
-	for (var i = 0; i < timestamps.length - 1; i++) {
-		if ( timestamps[i+1] > timestampEquivalent ) { // Find teh first timestamp our guess is greater than
-			return timestamps[i];
+	for (var i = 1; i < timestamps.length - 1; i++) {
+		if ( timestamps[i] > timestampEquivalent ) { // Find the first timestamp our guess is greater than
+			return timestamps[i-1];
 		}
 	}
 	return timestamps[timestamps.length - 1];
