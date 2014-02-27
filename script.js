@@ -111,7 +111,6 @@ window.onload = function () {
 	statePaths = nation.querySelectorAll('.state');
 	
 	// Go through and get all the state abbreviations used
-	stateAbbreviations = [];
 	for (var i = 0; i < statePaths.length; i++ ) {
 		if (statePaths[i].id.length == 2) {
 			stateAbbreviations.push(statePaths[i].id);
