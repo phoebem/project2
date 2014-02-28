@@ -2,6 +2,8 @@ var hashtagPlot = document.getElementById('hashtag-plot');
 var scrubBar = document.getElementById('scrub-bar');
 var SOTUvideo = document.getElementById('sotu-video');
 var videoOffset = 306;
+SOTUvideo.muted = true;
+var main_event = null;
 
 // Pull out all the transcript timestamps for use throughout
 var transcript = document.getElementById('sotu-transcript');
@@ -15,6 +17,7 @@ function extractTimestamps() {
 
 	return timestamps;
 }
+
 
 // Initialize these for loading later, after window.onload
 var nation = null;
@@ -35,7 +38,8 @@ var hashtagColors = {
 // Handling the hashtagPlot and scrubBar
 
 // Run hashtagMousemove every time the mouse moves above the hashtagPlot
-hashtagPlot.addEventListener('mousemove', hashtagMousemove, false);
+//hashtagPlot.addEventListener('mousemove', hashtagMousemove, false);
+hashtagPlot.addEventListener('click', hashtagMousemove, false);
 function hashtagMousemove(e) {
 	updateScrubBar(e);
 	updateVideo(e);
@@ -44,8 +48,18 @@ function hashtagMousemove(e) {
 
 hashtagPlot.addEventListener('mouseout', playVideo, false);
 function playVideo(e) {
-	scrubBar.style.visibility = "hidden";
+	//scrubBar.style.visibility = "hidden";
 	SOTUvideo.play();
+	scrubBar.style.visibility = 'visible';
+}
+
+//transcript.addEventListener('scroll', transcriptScroll, false);
+function transcriptScroll(e) {
+	console.log(" scroll at "+ transcript.scrollTop);
+	var percent = transcript.scrollTop/transcript.scrollHeight;
+
+		scrubBar.fractionScrubbed = percent;
+		updateVideo(e);
 }
 
 function updateScrubBar(e) {
@@ -60,6 +74,13 @@ function updateScrubBar(e) {
 function updateVideo(e) {
 	SOTUvideo.currentTime = SOTUvideo.duration * scrubBar.fractionScrubbed;
 }
+ 
+function trackVideo(percent){ // called when the video is playing
+	scrubBar.fractionScrubbed = percent;
+	scrubBar.style.left = position(hashtagPlot).x + percent * hashtagPlot.offsetWidth ; // move hashbar by total width
+	updateTranscript(null);
+	
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Handling the scrolling transcript
@@ -71,6 +92,7 @@ function updateTranscript(e) {
 function scrollToTimestamp(timestamp) {
 	var target = transcript.querySelector('#transcript-time-' + timestamp);
 	document.getElementById('sotu-transcript').scrollTop = target.offsetTop;
+	//console.log("scroll to "+ target.offsetTop);
 }
 
 function nearestStamp(fractionScrubbed) {
@@ -126,6 +148,10 @@ function updatePage() {
 	var dominantHashtag = dominantHashtagAt(SOTUvideo.currentTime);
 	recolorNation(dominantHashtag);
 	updateChart();
+	// Phoebe
+	main_event="timer";
+	trackVideo(SOTUvideo.currentTime/SOTUvideo.duration);
+	
 }
 
 function dominantHashtagAt(time) {
